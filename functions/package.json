@@ -19,6 +19,7 @@
     "graphql": "^15.5.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "firebase-functions-test": "^0.2.0"
   },
   "private": true
