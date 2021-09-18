@@ -1,6 +1,6 @@
 'use strict';
 
-var _templateObject = _taggedTemplateLiteral(['\n    type BlogPost {\n        date: String\n        description: String\n        duration: Int\n        title: String\n        views: Int\n    }\n    type Query {\n        hello: String\n        blogposts: [BlogPost]\n    }\n'], ['\n    type BlogPost {\n        date: String\n        description: String\n        duration: Int\n        title: String\n        views: Int\n    }\n    type Query {\n        hello: String\n        blogposts: [BlogPost]\n    }\n']);
+var _templateObject = _taggedTemplateLiteral(['\n    type BlogPost {\n        date: String\n        description: String\n        duration: Int\n        title: String\n        views: Int\n    }\n    type MailingListItem {\n        city: String\n        email: String\n        name: String\n        phone: String\n    }\n    type Mutation {\n        subscribeToIodineWebsiteMailingList(\n            city: String!\n            email: String!\n            name: String!\n            phone: String!\n        ): Boolean\n    }\n    type Query {\n        hello: String\n        blogposts: [BlogPost]\n    }\n'], ['\n    type BlogPost {\n        date: String\n        description: String\n        duration: Int\n        title: String\n        views: Int\n    }\n    type MailingListItem {\n        city: String\n        email: String\n        name: String\n        phone: String\n    }\n    type Mutation {\n        subscribeToIodineWebsiteMailingList(\n            city: String!\n            email: String!\n            name: String!\n            phone: String!\n        ): Boolean\n    }\n    type Query {\n        hello: String\n        blogposts: [BlogPost]\n    }\n']);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -14,6 +14,7 @@ var _require = require('apollo-server-cloud-functions'),
     gql = _require.gql;
 
 var BlogPosts = firebaseAdmin.firestore().collection('blogposts');
+var IodineMailingList = firebaseAdmin.firestore().collection('iodine_website_mailing_list');
 
 var firestoreDocToArray = function firestoreDocToArray(snapshot) {
     return snapshot.docs.map(function (doc) {
@@ -26,6 +27,28 @@ var typeDefs = gql(_templateObject);
 
 // Provide resolver functions for your schema fields
 var resolvers = {
+    Mutation: {
+        subscribeToIodineWebsiteMailingList: function subscribeToIodineWebsiteMailingList(_, _ref, _ref2) {
+            var city = _ref.city,
+                email = _ref.email,
+                name = _ref.name,
+                phone = _ref.phone;
+            var dataSources = _ref2.dataSources;
+
+            return IodineMailingList.add({
+                city: city,
+                email: email,
+                name: name,
+                phone: phone
+            }).then(function () {
+                console.log('Successfully added to mailing list!');
+                return true;
+            }).catch(function (error) {
+                console.error('Error: ', error);
+                return false;
+            });
+        }
+    },
     Query: {
         hello: function hello() {
             return 'Hello world!';
@@ -43,9 +66,9 @@ var resolvers = {
 var server = new ApolloServer({
     typeDefs: typeDefs,
     resolvers: resolvers,
-    context: function context(_ref) {
-        var req = _ref.req,
-            res = _ref.res;
+    context: function context(_ref3) {
+        var req = _ref3.req,
+            res = _ref3.res;
         return {
             headers: req.headers,
             req: req,

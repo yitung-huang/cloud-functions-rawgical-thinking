@@ -6,6 +6,9 @@ firebaseAdmin.initializeApp();
 const { ApolloServer, gql } = require('apollo-server-cloud-functions');
 
 const BlogPosts = firebaseAdmin.firestore().collection('blogposts');
+const IodineMailingList = firebaseAdmin
+    .firestore()
+    .collection('iodine_website_mailing_list');
 
 const firestoreDocToArray = (snapshot) =>
     snapshot.docs.map((doc) => doc.data());
@@ -19,6 +22,20 @@ const typeDefs = gql`
         title: String
         views: Int
     }
+    type MailingListItem {
+        city: String
+        email: String
+        name: String
+        phone: String
+    }
+    type Mutation {
+        subscribeToIodineWebsiteMailingList(
+            city: String!
+            email: String!
+            name: String!
+            phone: String!
+        ): Boolean
+    }
     type Query {
         hello: String
         blogposts: [BlogPost]
@@ -27,6 +44,28 @@ const typeDefs = gql`
 
 // Provide resolver functions for your schema fields
 const resolvers = {
+    Mutation: {
+        subscribeToIodineWebsiteMailingList: (
+            _,
+            { city, email, name, phone },
+            { dataSources }
+        ) => {
+            return IodineMailingList.add({
+                city,
+                email,
+                name,
+                phone
+            })
+                .then(() => {
+                    console.log('Successfully added to mailing list!');
+                    return true;
+                })
+                .catch((error) => {
+                    console.error('Error: ', error);
+                    return false;
+                });
+        }
+    },
     Query: {
         hello: () => 'Hello world!',
         blogposts: () =>
