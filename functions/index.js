@@ -1,6 +1,6 @@
 'use strict';
 
-var _templateObject = _taggedTemplateLiteral(['\n    type BlogPost {\n        date: String\n        description: String\n        duration: Int\n        title: String\n        views: Int\n    }\n    type MailingListItem {\n        city: String\n        email: String\n        name: String\n        phone: String\n    }\n    type Mutation {\n        subscribeToIodineWebsiteMailingList(\n            city: String!\n            email: String!\n            name: String!\n            phone: String!\n        ): Boolean\n    }\n    type Query {\n        hello: String\n        blogposts: [BlogPost]\n    }\n'], ['\n    type BlogPost {\n        date: String\n        description: String\n        duration: Int\n        title: String\n        views: Int\n    }\n    type MailingListItem {\n        city: String\n        email: String\n        name: String\n        phone: String\n    }\n    type Mutation {\n        subscribeToIodineWebsiteMailingList(\n            city: String!\n            email: String!\n            name: String!\n            phone: String!\n        ): Boolean\n    }\n    type Query {\n        hello: String\n        blogposts: [BlogPost]\n    }\n']);
+var _templateObject = _taggedTemplateLiteral(['\n    type BlogPost {\n        date: String\n        description: String\n        duration: Int\n        title: String\n        views: Int\n    }\n    type MailingListItem {\n        city: String\n        email: String\n        name: String\n        phone: String\n    }\n    type Mutation {\n        subscribeToIodineWebsiteMailingList(\n            city: String!\n            email: String!\n            name: String!\n            phone: String!\n        ): Boolean\n    }\n    type Query {\n        hello: String\n        blogposts: [BlogPost]\n        mailingList(uid: String!): [MailingListItem]\n    }\n'], ['\n    type BlogPost {\n        date: String\n        description: String\n        duration: Int\n        title: String\n        views: Int\n    }\n    type MailingListItem {\n        city: String\n        email: String\n        name: String\n        phone: String\n    }\n    type Mutation {\n        subscribeToIodineWebsiteMailingList(\n            city: String!\n            email: String!\n            name: String!\n            phone: String!\n        ): Boolean\n    }\n    type Query {\n        hello: String\n        blogposts: [BlogPost]\n        mailingList(uid: String!): [MailingListItem]\n    }\n']);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -13,6 +13,7 @@ var _require = require('apollo-server-cloud-functions'),
     ApolloServer = _require.ApolloServer,
     gql = _require.gql;
 
+var AuthorisedUsers = firebaseAdmin.firestore().collection('iodine_website_authorised_users');
 var BlogPosts = firebaseAdmin.firestore().collection('blogposts');
 var IodineMailingList = firebaseAdmin.firestore().collection('iodine_website_mailing_list');
 
@@ -59,6 +60,22 @@ var resolvers = {
                     return doc.data();
                 });
             });
+        },
+        mailingList: function mailingList(parent, _ref3) {
+            var uid = _ref3.uid;
+
+            return AuthorisedUsers.where('uid', '==', uid).get().then(function (querySnapshot) {
+                if (querySnapshot.docs.length > 0) {
+                    return IodineMailingList.get().then(function (querySnapshot) {
+                        return querySnapshot.docs.map(function (doc) {
+                            return doc.data();
+                        });
+                    });
+                }
+                throw new Error('Sorry, you are not authorised.');
+            }).catch(function (error) {
+                return error;
+            });
         }
     }
 };
@@ -66,9 +83,9 @@ var resolvers = {
 var server = new ApolloServer({
     typeDefs: typeDefs,
     resolvers: resolvers,
-    context: function context(_ref3) {
-        var req = _ref3.req,
-            res = _ref3.res;
+    context: function context(_ref4) {
+        var req = _ref4.req,
+            res = _ref4.res;
         return {
             headers: req.headers,
             req: req,

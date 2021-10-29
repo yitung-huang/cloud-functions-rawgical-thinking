@@ -5,6 +5,9 @@ firebaseAdmin.initializeApp();
 
 const { ApolloServer, gql } = require('apollo-server-cloud-functions');
 
+const AuthorisedUsers = firebaseAdmin
+    .firestore()
+    .collection('iodine_website_authorised_users');
 const BlogPosts = firebaseAdmin.firestore().collection('blogposts');
 const IodineMailingList = firebaseAdmin
     .firestore()
@@ -39,6 +42,7 @@ const typeDefs = gql`
     type Query {
         hello: String
         blogposts: [BlogPost]
+        mailingList(uid: String!): [MailingListItem]
     }
 `;
 
@@ -71,7 +75,20 @@ const resolvers = {
         blogposts: () =>
             BlogPosts.get().then((querySnapshot) => {
                 return querySnapshot.docs.map((doc) => doc.data());
-            })
+            }),
+        mailingList: (parent, { uid }) => {
+            return AuthorisedUsers.where('uid', '==', uid)
+                .get()
+                .then((querySnapshot) => {
+                    if (querySnapshot.docs.length > 0) {
+                        return IodineMailingList.get().then((querySnapshot) => {
+                            return querySnapshot.docs.map((doc) => doc.data());
+                        });
+                    }
+                    throw new Error('Sorry, you are not authorised.');
+                })
+                .catch((error) => error);
+        }
     }
 };
 
