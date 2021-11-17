@@ -13,6 +13,17 @@ var _require = require('apollo-server-cloud-functions'),
     ApolloServer = _require.ApolloServer,
     gql = _require.gql;
 
+var nodemailer = require('nodemailer');
+var cors = require('cors')({ origin: true });
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'hippopotommy@gmail.com',
+        pass: 'Ionia still stands!'
+    }
+});
+
 var AuthorisedUsers = firebaseAdmin.firestore().collection('iodine_website_authorised_users');
 var BlogPosts = firebaseAdmin.firestore().collection('blogposts');
 var IodineMailingList = firebaseAdmin.firestore().collection('iodine_website_mailing_list');
@@ -25,6 +36,11 @@ var firestoreDocToArray = function firestoreDocToArray(snapshot) {
 
 // Construct a schema, using GraphQL schema language
 var typeDefs = gql(_templateObject);
+
+var containersCommon = 'max-width:600px;margin:0 auto;color:black;text-align:center;';
+var tableCellStyles = 'border: 1px solid #245966; padding: 0.5em 1em;';
+var thStyles = tableCellStyles + 'text-align: center;background-color: #d4f8f8;';
+var tdStyles = tableCellStyles + 'text-align: left;background-color: #f2ffff;';
 
 // Provide resolver functions for your schema fields
 var resolvers = {
@@ -43,6 +59,16 @@ var resolvers = {
                 phone: phone
             }).then(function () {
                 console.log('Successfully added to mailing list!');
+
+                var mailOptions = {
+                    from: '躺馬式 <hippopotommy@gmail.com>',
+                    to: 'yitunghuang83@gmail.com',
+                    cc: 'whytihuang@gmail.com',
+                    subject: '[碘131​貓甲亢治療中心] 新通知名單已加入',
+                    html: '\n                        <header style="' + containersCommon + 'background-color: #A4E2E2;padding:20px 10px;">\n                            <h1 style="font-size: 32px;margin:0.75em;">\u7898131\u200B\u8C93\u7532\u4EA2\u6CBB\u7642\u4E2D\u5FC3</h1>\n                        </header>\n                        <div style="' + containersCommon + '">\n                            <p style="text-align:center;">\u4E0A\u5DE5\u5566\uFF01\u53C8\u6709\u4EBA\u8A02\u95B1\u56C9\uFF1A</p>\n                            <table style="border-collapse:collapse;border:2px solid #245966;margin:0 auto;">\n                                <tr>\n                                    <th style="' + thStyles + '">\u59D3\u540D</th>\n                                    <td style="' + tdStyles + '">' + name + '</td>\n                                </tr>\n                                <tr>\n                                    <th style="' + thStyles + '">\u96FB\u8A71</th>\n                                    <td style="' + tdStyles + '">' + phone + '</td>\n                                </tr>\n                                <tr>\n                                    <th style="' + thStyles + '">Email</th>\n                                    <td style="' + tdStyles + '">' + email + '</td>\n                                </tr>\n                                <tr>\n                                    <th style="' + thStyles + '">\u7E23\u5E02</th>\n                                    <td style="' + tdStyles + '">' + city + '</td>\n                                </tr>\n                            </table>\n                        </div>\n                        <footer style="' + containersCommon + 'background-color:#CFCFCF;padding:10px;margin-top:60px;">\n                            \xA9 2021 by Miao Cat Hospital\n                        </footer>'
+                };
+                transporter.sendMail(mailOptions);
+
                 return true;
             }).catch(function (error) {
                 console.error('Error: ', error);
