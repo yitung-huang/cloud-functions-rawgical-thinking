@@ -97,8 +97,8 @@ const resolvers = {
 
                     const mailOptions = {
                         from: '躺馬式 <hippopotommy@gmail.com>',
-                        to: 'yitunghuang83@gmail.com',
-                        cc: 'whytihuang@gmail.com',
+                        to: 'sonic.chou@gmail.com',
+                        cc: 'orangemimi3@gmail.com',
                         subject: '[碘131​貓甲亢治療中心] 新通知名單已加入',
                         html: `
                         <header style="${containersCommon}background-color: #A4E2E2;padding:20px 10px;">
