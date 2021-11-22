@@ -64,20 +64,6 @@ const tableCellStyles =
 const thStyles = `${tableCellStyles}text-align: center;background-color: #d4f8f8;`;
 const tdStyles = `${tableCellStyles}text-align: left;background-color: #f2ffff;`;
 
-const greetings = [
-    '上工啦！又有人訂閱囉！',
-    '老闆娘，人客喔！',
-    '要快『碘』通知我喔！',
-    '偶也不太蘇胡捏...你們也看人嗎？',
-    '希望你們快點開工喔！',
-    '我聽說澳洲有隻狗叫做慕斯，她so可愛的耶 ♥',
-    '『唉唷叮』到底是什麼東西蛤？',
-    '我自願當貢品！',
-    '你不要一直看恐怖片啦！',
-    '凜冬將至...',
-    '既然你誠心誠意的發問了...我們就大發慈悲的告訴你！'
-];
-
 // Provide resolver functions for your schema fields
 const resolvers = {
     Mutation: {
@@ -105,11 +91,7 @@ const resolvers = {
                             <h1 style="font-size: 32px;margin:0.75em;">碘131​貓甲亢治療中心</h1>
                         </header>
                         <div style="${containersCommon}">
-                            <p style="text-align:center;">${
-                                greetings[
-                                    Math.floor(Math.random() * greetings.length)
-                                ]
-                            }</p>
+                            <p style="text-align:center;">上工啦！又有人訂閱囉！</p>
                             <table style="border-collapse:collapse;border:2px solid #245966;margin:0 auto;">
                                 <tr>
                                     <th style="${thStyles}">姓名</th>
