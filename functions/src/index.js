@@ -38,6 +38,7 @@ const typeDefs = gql`
     }
     type MailingListItem {
         city: String
+        date: String
         email: String
         name: String
         phone: String
@@ -74,6 +75,7 @@ const resolvers = {
         ) => {
             return IodineMailingList.add({
                 city,
+                date: new Date().toLocaleDateString('zh-TW'),
                 email,
                 name,
                 phone
