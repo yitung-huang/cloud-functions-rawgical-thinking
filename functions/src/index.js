@@ -158,7 +158,13 @@ const resolvers = {
                 .then((querySnapshot) => {
                     if (querySnapshot.docs.length > 0) {
                         return IodineMailingList.get().then((querySnapshot) => {
-                            return querySnapshot.docs.map((doc) => doc.data());
+                            return querySnapshot.docs
+                                .map((doc) => doc.data())
+                                .sort(
+                                    (entryA, entryB) =>
+                                        new Date(entryB.date || 0) -
+                                        new Date(entryA.date || 0)
+                                );
                         });
                     }
                     throw new Error('Sorry, you are not authorised.');

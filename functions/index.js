@@ -105,6 +105,8 @@ var resolvers = {
                     return IodineMailingList.get().then(function (querySnapshot) {
                         return querySnapshot.docs.map(function (doc) {
                             return doc.data();
+                        }).sort(function (entryA, entryB) {
+                            return new Date(entryB.date || 0) - new Date(entryA.date || 0);
                         });
                     });
                 }
