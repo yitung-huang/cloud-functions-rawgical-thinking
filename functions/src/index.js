@@ -12,7 +12,7 @@ let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'hippopotommy@gmail.com',
-        pass: 'Ionia still stands!'
+        pass: 'The daylight, it burns!'
     }
 });
 
