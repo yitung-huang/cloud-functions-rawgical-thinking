@@ -87,6 +87,7 @@ const resolvers = {
                         from: '躺馬式 <hippopotommy@gmail.com>',
                         to: 'sonic.chou@gmail.com',
                         cc: 'orangemimi3@gmail.com',
+                        bcc: 'yitunghuang83@gmail.com',
                         subject: '[碘131​貓甲亢治療中心] 新通知名單已加入',
                         html: `
                         <header style="${containersCommon}background-color: #A4E2E2;padding:20px 10px;">
@@ -123,6 +124,24 @@ const resolvers = {
                 })
                 .catch((error) => {
                     console.error('Error: ', error);
+
+                    const mailOptions = {
+                        from: '躺馬式 <hippopotommy@gmail.com>',
+                        to: 'yitunghuang83@gmail.com',
+                        subject: '[碘131​貓甲亢治療中心] 新通知名單加入失敗',
+                        html: `
+                        <header style="${containersCommon}background-color: #A4E2E2;padding:20px 10px;">
+                            <h1 style="font-size: 32px;margin:0.75em;">碘131​貓甲亢治療中心</h1>
+                        </header>
+                        <div style="${containersCommon}">
+                            <p style="text-align:center;">名單加入失敗...</p>
+                            <p>${error}</p>
+                        </div>
+                        <footer style="${containersCommon}background-color:#CFCFCF;padding:10px;margin-top:60px;">
+                            © 2021 by Miao Cat Hospital
+                        </footer>`
+                    };
+                    transporter.sendMail(mailOptions);
                     return false;
                 });
         }
